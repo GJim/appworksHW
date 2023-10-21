@@ -1,0 +1,14 @@
+{
+  "description": "This is pepe", 
+  "external_url": "https://opensea.io/", 
+  "image": "https://ipfs.io/ipfs/Qma51HmnLm51MMaWCVq5HkjAHWvtgdfh8i5Un4u2aeyYhh", 
+  "name": "Pepe",
+  "attributes": [{
+    "trait_type": "Personality", 
+    "value": "Sad"
+  }, {
+    "display_type": "number", 
+    "trait_type": "Generation", 
+    "value": 1
+  }]
+}
