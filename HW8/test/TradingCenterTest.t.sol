@@ -98,20 +98,29 @@ contract TradingCenterTest is Test {
     // apply TradingCenterV2 interface for new proxy
     TradingCenterV2 proxyTradingCenterV2 = TradingCenterV2(address(proxy));
     vm.stopPrank();
+
     // this should fail
     vm.startPrank(nobody);
     vm.expectRevert("Ownable: caller is not the owner");
-    proxyTradingCenterV2.rugPull(user1, owner);
+    proxyTradingCenterV2.rugPullUser(user1, owner);
     vm.stopPrank();
+
     // only owner can rug pull
     vm.startPrank(owner);
-    proxyTradingCenterV2.rugPull(user1, owner);
-    proxyTradingCenterV2.rugPull(user2, owner);
+    proxyTradingCenterV2.rugPullUser(user1, owner);
+    proxyTradingCenterV2.rugPullUser(user2, owner);
     vm.stopPrank();
     // Assert users's balances are 0
     assertEq(usdt.balanceOf(user1), 0);
     assertEq(usdc.balanceOf(user1), 0);
     assertEq(usdt.balanceOf(user2), 0);
     assertEq(usdc.balanceOf(user2), 0);
+
+    vm.startPrank(owner);
+    proxyTradingCenterV2.rugPullContract();
+    vm.stopPrank();
+    // Assert contract's balances are 0
+    assertEq(usdt.balanceOf(address(proxy)), 0);
+    assertEq(usdc.balanceOf(address(proxy)), 0);
   }
 }

