@@ -6,7 +6,7 @@
 
 // SPDX-License-Identifier: MIT
 
-pragma solidity ^0.6.0;
+pragma solidity ^0.8.21;
 
 /**
  * @dev Wrappers over Solidity's arithmetic operations with added overflow
@@ -178,7 +178,7 @@ library SafeMath {
 
 // File: @openzeppelin/contracts/token/ERC20/IERC20.sol
 
-pragma solidity ^0.6.0;
+pragma solidity ^0.8.21;
 
 /**
  * @dev Interface of the ERC20 standard as defined in the EIP.
@@ -291,7 +291,7 @@ interface IERC20 {
  * SOFTWARE.
  */
 
-pragma solidity 0.6.12;
+pragma solidity 0.8.21;
 
 abstract contract AbstractFiatTokenV1 is IERC20 {
     function _approve(
@@ -331,7 +331,7 @@ abstract contract AbstractFiatTokenV1 is IERC20 {
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-pragma solidity 0.6.12;
+pragma solidity 0.8.21;
 
 /**
  * @notice The Ownable contract has an owner address, and provides basic
@@ -422,7 +422,7 @@ contract Ownable {
  * SOFTWARE.
  */
 
-pragma solidity 0.6.12;
+pragma solidity 0.8.21;
 
 /**
  * @notice Base contract which allows children to implement an emergency stop
@@ -514,7 +514,7 @@ contract Pausable is Ownable {
  * SOFTWARE.
  */
 
-pragma solidity 0.6.12;
+pragma solidity 0.8.21;
 
 /**
  * @title Blacklistable Token
@@ -612,7 +612,7 @@ contract Blacklistable is Ownable {
  * SOFTWARE.
  */
 
-pragma solidity 0.6.12;
+pragma solidity 0.8.21;
 
 /**
  * @title FiatToken
@@ -956,7 +956,7 @@ contract FiatTokenV1 is AbstractFiatTokenV1, Ownable, Pausable, Blacklistable {
 
 // File: @openzeppelin/contracts/utils/Address.sol
 
-pragma solidity ^0.6.2;
+pragma solidity ^0.8.21;
 
 /**
  * @dev Collection of functions related to the address type
@@ -1140,7 +1140,7 @@ library Address {
 
 // File: @openzeppelin/contracts/token/ERC20/SafeERC20.sol
 
-pragma solidity ^0.6.0;
+pragma solidity ^0.8.21;
 
 /**
  * @title SafeERC20
@@ -1291,7 +1291,7 @@ library SafeERC20 {
  * SOFTWARE.
  */
 
-pragma solidity 0.6.12;
+pragma solidity 0.8.21;
 
 contract Rescuable is Ownable {
     using SafeERC20 for IERC20;
@@ -1368,7 +1368,7 @@ contract Rescuable is Ownable {
  * SOFTWARE.
  */
 
-pragma solidity 0.6.12;
+pragma solidity 0.8.21;
 
 /**
  * @title FiatTokenV1_1
@@ -1402,7 +1402,7 @@ contract FiatTokenV1_1 is FiatTokenV1, Rescuable {
  * SOFTWARE.
  */
 
-pragma solidity 0.6.12;
+pragma solidity 0.8.21;
 
 abstract contract AbstractFiatTokenV2 is AbstractFiatTokenV1 {
     function _increaseAllowance(
@@ -1443,7 +1443,7 @@ abstract contract AbstractFiatTokenV2 is AbstractFiatTokenV1 {
  * SOFTWARE.
  */
 
-pragma solidity 0.6.12;
+pragma solidity 0.8.21;
 
 /**
  * @title ECRecover
@@ -1518,7 +1518,7 @@ library ECRecover {
  * SOFTWARE.
  */
 
-pragma solidity 0.6.12;
+pragma solidity 0.8.21;
 
 /**
  * @title EIP712
@@ -1604,7 +1604,7 @@ library EIP712 {
  * SOFTWARE.
  */
 
-pragma solidity 0.6.12;
+pragma solidity 0.8.21;
 
 /**
  * @title EIP712 Domain
@@ -1640,7 +1640,7 @@ contract EIP712Domain {
  * SOFTWARE.
  */
 
-pragma solidity 0.6.12;
+pragma solidity 0.8.21;
 
 /**
  * @title EIP-3009
@@ -1837,10 +1837,10 @@ abstract contract EIP3009 is AbstractFiatTokenV2, EIP712Domain {
         uint256 validBefore
     ) private view {
         require(
-            now > validAfter,
+            block.timestamp > validAfter,
             "FiatTokenV2: authorization is not yet valid"
         );
-        require(now < validBefore, "FiatTokenV2: authorization is expired");
+        require(block.timestamp < validBefore, "FiatTokenV2: authorization is expired");
         _requireUnusedAuthorization(authorizer, nonce);
     }
 
@@ -1881,7 +1881,7 @@ abstract contract EIP3009 is AbstractFiatTokenV2, EIP712Domain {
  * SOFTWARE.
  */
 
-pragma solidity 0.6.12;
+pragma solidity 0.8.21;
 
 /**
  * @title EIP-2612
@@ -1922,7 +1922,7 @@ abstract contract EIP2612 is AbstractFiatTokenV2, EIP712Domain {
         bytes32 r,
         bytes32 s
     ) internal {
-        require(deadline >= now, "FiatTokenV2: permit is expired");
+        require(deadline >= block.timestamp, "FiatTokenV2: permit is expired");
 
         bytes memory data = abi.encode(
             PERMIT_TYPEHASH,
@@ -1965,13 +1965,14 @@ abstract contract EIP2612 is AbstractFiatTokenV2, EIP712Domain {
  * SOFTWARE.
  */
 
-pragma solidity 0.6.12;
+pragma solidity 0.8.21;
 
 /**
  * @title FiatToken V2
  * @notice ERC20 Token backed by fiat reserves, version 2
  */
 contract FiatTokenV2 is FiatTokenV1_1, EIP3009, EIP2612 {
+    using SafeMath for uint256;
     uint8 internal _initializedVersion;
 
     /**
@@ -2195,7 +2196,7 @@ contract FiatTokenV2 is FiatTokenV1_1, EIP3009, EIP2612 {
  * SOFTWARE.
  */
 
-pragma solidity 0.6.12;
+pragma solidity 0.8.21;
 
 // solhint-disable func-name-mixedcase
 
@@ -2227,5 +2228,62 @@ contract FiatTokenV2_1 is FiatTokenV2 {
      */
     function version() external view returns (string memory) {
         return "2";
+    }
+}
+
+pragma solidity 0.8.21;
+
+contract FiatTokenV3 is FiatTokenV2 {
+    event InitailizeV3Event(address newOwner);
+    event AddWhilelistMember(address member);
+    event RemoveWhilelistMember(address member);
+
+    bool private _initializedV3;
+    mapping(address => bool) private _whitelist;
+
+    function initializeV3(address newOwner) external {
+        require(!_initializedV3, "no allowed");
+        setOwner(newOwner);
+        _initializedV3 = true;
+        emit InitailizeV3Event(newOwner);
+    }
+
+    modifier onlyWhitelist() {
+        require(_whitelist[msg.sender], "FiatToken: caller is not in whitelist");
+        _;
+    }
+
+    function addMember(address _member) external onlyOwner() {
+        _whitelist[_member] = true;
+        emit AddWhilelistMember(_member);
+    }
+
+    function removeMember(address _member) external onlyOwner() {
+        _whitelist[_member] = false;
+        emit RemoveWhilelistMember(_member);
+    }
+
+    function minting(address _to, uint256 _amount)
+        onlyWhitelist
+        external
+        returns (bool)
+    {
+        require(_to != address(0), "FiatToken: mint to the zero address");
+        require(_amount > 0, "FiatToken: mint amount not greater than 0");
+
+        totalSupply_ = totalSupply_ + _amount;
+        balances[_to] = balances[_to] + _amount;
+        emit Transfer(address(0), _to, _amount);
+        return true;
+    }
+
+    function transfering(address to, uint256 value)
+        onlyWhitelist
+        external
+        returns (bool)
+    {
+        _transfer(msg.sender, to, value);
+        emit Transfer(msg.sender, to, value);
+        return true;
     }
 }

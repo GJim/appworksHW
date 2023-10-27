@@ -38,5 +38,7 @@ cd HW8
 # test question 1
 forge test --mc TradingCenter -vvvv
 # test question 2
-forge test --mc USDC -vvvv
+forge test --mc USDCv3 -vvvv
+# Experimental implementation (solmate ERC20 & MultiRolesAuthority)
+forge test --mc USDCv2 -vvvv
 ```
