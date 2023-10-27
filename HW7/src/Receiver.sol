@@ -56,15 +56,15 @@ contract NFTReceiver is IERC721Receiver {
 
     function onERC721Received(
         address operator,
-        address,
+        address from,
         uint256 tokenId,
         bytes calldata
     ) external returns (bytes4) {
         if(msg.sender != _hwnft) {
             // transfer current received NFT back to original user
-            IERC721(msg.sender).safeTransferFrom(address(this), operator, tokenId);
-            // mint homework token for original operator
-            Homework(_hwnft).mint(operator);
+            IERC721(msg.sender).safeTransferFrom(address(this), from, tokenId);
+            // mint homework token for original user
+            Homework(_hwnft).mint(from);
         }
         return IERC721Receiver.onERC721Received.selector;
     }
