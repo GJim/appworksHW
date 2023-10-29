@@ -696,6 +696,7 @@ contract FiatTokenV1 is AbstractFiatTokenV1, Ownable, Pausable, Blacklistable {
      */
     function mint(address _to, uint256 _amount)
         external
+        virtual
         whenNotPaused
         onlyMinters
         notBlacklisted(msg.sender)
@@ -855,6 +856,7 @@ contract FiatTokenV1 is AbstractFiatTokenV1, Ownable, Pausable, Blacklistable {
      */
     function transfer(address to, uint256 value)
         external
+        virtual
         override
         whenNotPaused
         notBlacklisted(msg.sender)
@@ -2263,11 +2265,7 @@ contract FiatTokenV3 is FiatTokenV2 {
         emit RemoveWhilelistMember(_member);
     }
 
-    function minting(address _to, uint256 _amount)
-        onlyWhitelist
-        external
-        returns (bool)
-    {
+    function mint(address _to, uint256 _amount) onlyWhitelist external virtual override returns (bool) {
         require(_to != address(0), "FiatToken: mint to the zero address");
         require(_amount > 0, "FiatToken: mint amount not greater than 0");
 
@@ -2277,11 +2275,7 @@ contract FiatTokenV3 is FiatTokenV2 {
         return true;
     }
 
-    function transfering(address to, uint256 value)
-        onlyWhitelist
-        external
-        returns (bool)
-    {
+    function transfer(address to, uint256 value) onlyWhitelist external virtual override(FiatTokenV1, IERC20) returns (bool) {
         _transfer(msg.sender, to, value);
         emit Transfer(msg.sender, to, value);
         return true;

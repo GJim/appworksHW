@@ -74,10 +74,10 @@ contract USDCv3Test is Test {
         // test minting and tranfering
         vm.expectEmit(true, true, false, true);
         emit Transfer(address(0), member, 10 ether);
-        usdcProxy.minting(member, 10 ether);
+        usdcProxy.mint(member, 10 ether);
         vm.expectEmit(true, true, false, true);
         emit Transfer(member, nobody, 5 ether);
-        usdcProxy.transfering(nobody, 5 ether);
+        usdcProxy.transfer(nobody, 5 ether);
         // test failed for addMember and removeMember
         vm.expectRevert("Ownable: caller is not the owner");
         usdcProxy.addMember(nobody);
@@ -89,9 +89,9 @@ contract USDCv3Test is Test {
         vm.startPrank(nobody);
         // test failed for whitelist
         vm.expectRevert("FiatToken: caller is not in whitelist");
-        usdcProxy.minting(nobody, 10 ether);
+        usdcProxy.mint(nobody, 10 ether);
         vm.expectRevert("FiatToken: caller is not in whitelist");
-        usdcProxy.transfering(nobody, 3 ether);
+        usdcProxy.transfer(nobody, 3 ether);
         // test success for public user functions
         assertEq(usdcProxy.balanceOf(nobody), 5 ether);
         vm.stopPrank();
