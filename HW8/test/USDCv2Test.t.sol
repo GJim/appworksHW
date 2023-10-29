@@ -69,6 +69,7 @@ contract USDCv2Test is Test {
         usdc2.transfer(nobody, 1000);
         assertEq(usdc2.balanceOf(nobody), 1000);
         // test transferFrom
+        usdc2.approve(member, 500);
         vm.expectEmit(true, true, false, true);
         emit Transfer(member, owner, 500);
         usdc2.transferFrom(member, owner, 500);
