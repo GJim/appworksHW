@@ -42,3 +42,10 @@ forge test --mc USDCv3 -vvvv
 # Experimental implementation (solmate ERC20 & MultiRolesAuthority)
 forge test --mc USDCv2 -vvvv
 ```
+
+### HW9
+```shell
+cd HW9
+# generate report
+forge test --mc BenchmarkTest --gas-report
+```
