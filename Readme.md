@@ -49,3 +49,13 @@ cd HW9
 # generate report
 forge test --mc BenchmarkTest --gas-report
 ```
+
+### HW10
+```shell
+# homework
+cd SimpleSwap
+forge test
+# practice on class
+cd UniswapV2Practice
+forge test
+```
