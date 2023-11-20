@@ -62,7 +62,10 @@ forge test
 
 ### HW11
 ```shell
-# practice on class
+# practice 1 on class
 cd UniswapV2Practice
 forge test --mc BankTest
+# practice 2 on class
+cd FlashSwapPractice
+forge test --mc FlashSwapPracticeTest
 ```
