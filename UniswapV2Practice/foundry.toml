@@ -3,6 +3,6 @@ src = "src"
 out = "out"
 libs = ["lib"]
 
-rpc_endpoints = {mainnet = API_KEY}
+rpc_endpoints = {mainnet = "RPC_API_KEY"}
 
 # See more config options https://github.com/foundry-rs/foundry/tree/master/config

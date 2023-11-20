@@ -59,3 +59,10 @@ forge test
 cd UniswapV2Practice
 forge test
 ```
+
+### HW11
+```shell
+# practice on class
+cd UniswapV2Practice
+forge test --mc BankTest
+```
