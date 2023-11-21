@@ -68,4 +68,7 @@ forge test --mc BankTest
 # practice 2 on class
 cd FlashSwapPractice
 forge test --mc FlashSwapPracticeTest
+# homework
+cd FlashSwapPractice
+forge test --mc ArbitragePracticeTest
 ```

@@ -13,6 +13,15 @@ contract Arbitrage is IUniswapV2Callee, Ownable {
     // EXTERNAL NON-VIEW ONLY OWNER
     //
 
+    struct Callback {
+        address weth;
+        address usdc;
+        address priceLowerPool;
+        address priceHigherPool;
+        uint256 borrowAmount;
+        uint256 payBackAmount;
+    }
+
     function withdraw() external onlyOwner {
         (bool success, ) = msg.sender.call{ value: address(this).balance }("");
         require(success, "Withdraw failed");
@@ -27,7 +36,46 @@ contract Arbitrage is IUniswapV2Callee, Ownable {
     //
 
     function uniswapV2Call(address sender, uint256 amount0, uint256 amount1, bytes calldata data) external override {
-        // TODO
+        require(sender == address(this), "sender must be this contract");
+        require(amount0 > 0 || amount1 > 0, "one of amount must greater than 0");
+        
+        //////          Method 1          //////
+        // *[we got the borrowed eth now]
+        // decode the callback data encoded in arbitrage function
+        Callback memory decode = abi.decode(data, (Callback));
+        // [swap WETH for USDC in higher price pool]
+        // in order to calculate how much usdc we can swap for borrowed weth
+        // we need to get the reserves from higher price pool
+        (uint256 wethReserve, uint256 usdcReserve,) = IUniswapV2Pair(decode.priceHigherPool).getReserves();
+        // use the _getAmountOut to calculate the amount of usdc for exact weth we can deposit
+        uint256 revenue = _getAmountOut(decode.borrowAmount, wethReserve, usdcReserve);
+        // deposit exact weth into higher price pool before swap
+        IERC20(decode.weth).transfer(decode.priceHigherPool, decode.borrowAmount);
+        // *[we do not have any asset now]
+        // trigger higher price pool swap function to receive usdc
+        IUniswapV2Pair(decode.priceHigherPool).swap(0, revenue, address(this), "");
+        // *[we got the revenue of usdc now]
+        // [repay USDC to lower pool]
+        IERC20(decode.usdc).transfer(decode.priceLowerPool, decode.payBackAmount);
+
+        //////          Method 2          //////
+        // // *[we got the borrowed usdc now]
+        // // decode the callback data encoded in arbitrage function
+        // Callback memory decode = abi.decode(data, (Callback));
+        // // [swap USDC for WETH in lower pool]
+        // // in order to calculate how much weth we can swap for borrowed usdc
+        // // we need to get the reserves from lower price pool
+        // (uint256 wethReserve, uint256 usdcReserve,) = IUniswapV2Pair(decode.priceLowerPool).getReserves();
+        // // use the _getAmountOut to calculate the amount of weth for exact usdc we can deposit
+        // uint256 revenue = _getAmountOut(decode.borrowAmount, usdcReserve, wethReserve);
+        // // deposit exact usdc into lower pool before swap
+        // IERC20(decode.usdc).transfer(decode.priceLowerPool, decode.borrowAmount);
+        // // *[we do not have any asset now]
+        // // trigger lower price pool swap function to receive weth
+        // IUniswapV2Pair(decode.priceLowerPool).swap(revenue, 0, address(this), "");
+        // // *[we got the revenue of weth now]
+        // // [repay WETH to higher pool]
+        // IERC20(decode.weth).transfer(decode.priceHigherPool, decode.payBackAmount);
     }
 
     // Method 1 is
@@ -39,8 +87,36 @@ contract Arbitrage is IUniswapV2Callee, Ownable {
     //  - swap USDC for WETH in lower pool
     //  - repay WETH to higher pool
     // for testing convenient, we implement the method 1 here
-    function arbitrage(address priceLowerPool, address priceHigherPool, uint256 borrowETH) external {
-        // TODO
+    function arbitrage(address priceLowerPool, address priceHigherPool, uint256 borrowAmount) external {
+        require(borrowAmount > 0, "Borrow amount must be greater than 0");
+
+        //////          Method 1          //////
+        // get weth and usdc address from any pool
+        address weth = IUniswapV2Pair(priceLowerPool).token0();
+        address usdc = IUniswapV2Pair(priceLowerPool).token1();
+        // [borrow WETH from lower price pool]
+        // in order to calculate how much usdc we need to pay back
+        // we need to get the reserves from lower price pool
+        (uint256 wethReserve, uint256 usdcReserve,) = IUniswapV2Pair(priceLowerPool).getReserves();
+        // use the _getAmountIn to calculate the amount of usdc for exact weth we want to borrow
+        uint256 payBackAmount = _getAmountIn(borrowAmount, usdcReserve, wethReserve);
+        Callback memory data = Callback(weth, usdc, priceLowerPool, priceHigherPool, borrowAmount, payBackAmount);
+        // trigger lower price pool swap function
+        IUniswapV2Pair(priceLowerPool).swap(borrowAmount, 0, address(this), abi.encode(data));
+
+        //////          Method 2          //////
+        // // get weth and usdc address from any pool
+        // address weth = IUniswapV2Pair(priceLowerPool).token0();
+        // address usdc = IUniswapV2Pair(priceLowerPool).token1();
+        // // [borrow USDC from higher price pool]
+        // // in order to calculate how much weth we need to pay back
+        // // we need to get the reserves from higher price pool
+        // (uint256 wethReserve, uint256 usdcReserve,) = IUniswapV2Pair(priceHigherPool).getReserves();
+        // // use the _getAmountIn to calculate the amount of weth for exact usdc we want to borrow
+        // uint256 payBackAmount = _getAmountIn(borrowAmount, wethReserve, usdcReserve);
+        // Callback memory data = Callback(weth, usdc, priceLowerPool, priceHigherPool, borrowAmount, payBackAmount);
+        // // trigger higher price pool swap function
+        // IUniswapV2Pair(priceHigherPool).swap(0, borrowAmount, address(this), abi.encode(data));
     }
 
     //
